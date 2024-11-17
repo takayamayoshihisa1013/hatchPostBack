@@ -48,11 +48,12 @@ def rightProfile():
                         WHERE id = %s
                         """, (session["userId"],))
             profileData = cur.fetchone()
-            return jsonify({"login":True, "profileData":profileData}), 200
+            return jsonify({"login": True, "profileData": profileData}), 200
         except Exception as e:
-            return jsonify({"login":False, "profileData":("-","Error")}), 400
+            return jsonify({"login": False, "profileData": ("-", "Error")}), 400
     else:
         return jsonify({"login": False, "profileData": ("-", "ゲスト")}), 200
+
 
 @app.route("/newUser", methods=["POST"])
 def newUser():
@@ -126,6 +127,7 @@ def postData():
     postData = cur.fetchall()
     return jsonify({"state": "success", "postData": postData}), 200
 
+
 @app.route("/profile", methods=["POST"])
 def profile():
     profileUserId = request.get_json()
@@ -138,26 +140,45 @@ def profile():
                     SELECT id, username, profileIcon, profileBackImage, profileText
                     FROM user
                     WHERE id = %s
-                    """,(profileUserId["profileUserId"],))
+                    """, (profileUserId["profileUserId"],))
         profileData = cur.fetchone()
+        # フォロー・フォロワーデータ
+        cur.execute("""
+                    SELECT 
+                        COUNT(CASE WHEN user_id = %s THEN 1 ELSE NULL END) AS follow_count,
+                        COUNT(CASE WHEN follow_id = %s THEN 1 ELSE NULL END) AS follower_count
+                    FROM follow
+                """, (profileUserId["profileUserId"], profileUserId["profileUserId"]))
+
+        followData = cur.fetchone()
         # ポストデータ
         cur.execute("""
                     SELECT user.id, user.username, post.postContent, post.created_at
                     FROM post
                     INNER JOIN user ON user.id = post.user_id
                     WHERE post.user_id = %s
-                    """,(profileUserId["profileUserId"],))
+                    """, (profileUserId["profileUserId"],))
         postData = cur.fetchall()
-        # print(postData)
         # 自分かどうか
-        if profileUserId["profileUserId"] == session["userId"]:
-            
-            return jsonify({"state":"success", "postData":postData, "profileData":profileData, "myself":True}), 200
+        if profileUserId["profileUserId"] != session["userId"]:
+            # フォローしているかどうか
+            cur.execute("""
+                        SELECT *
+                        FROM follow
+                        WHERE user_id = %s AND follow_id = %s
+                        """, (session["userId"], profileUserId["profileUserId"]))
+            followStateCheck = cur.fetchone()
+            if followStateCheck:
+                return jsonify({"state": "success", "postData": postData, "profileData": profileData, "myself": False, "followState": True, "followData": followData}), 200
+            else:
+                return jsonify({"state": "success", "postData": postData, "profileData": profileData, "myself": False, "followState": False, "followData": followData}), 200
         else:
-            return jsonify({"state":"success", "postData":postData, "profileData":profileData, "myself":False}), 200
+            return jsonify({"state": "success", "postData": postData, "profileData": profileData, "myself": True, "followState": "myself", "followData": followData}), 200
+
     except Exception as e:
         print(e)
-        return jsonify({"state":"failed"}), 400
+        return jsonify({"state": "failed"}), 400
+
 
 @app.route("/changeProfile", methods=["POST"])
 def changeProfile():
@@ -172,15 +193,75 @@ def changeProfile():
                         profileText = %s
                     WHERE id = %s
                     """, (changeProfileData["changeUsername"], changeProfileData["changeProfileText"], session["userId"]))
-        
+
         conn.commit()
         cur.close()
         conn.close()
-        return jsonify({"state":"success"}), 200
+        return jsonify({"state": "success"}), 200
     except Exception as e:
         print(e)
-        
-        return jsonify({"state":"failed"}), 400
+
+        return jsonify({"state": "failed"}), 400
+
+
+@app.route("/follow", methods=["POST"])
+def follow():
+    followData = request.get_json()
+    try:
+        conn = mysql_conn()
+        cur = conn.cursor()
+        cur.execute("""
+                    SELECT id
+                    FROM follow
+                    WHERE user_id = %s AND follow_id = %s
+                    """, (session["userId"], followData["followId"]))
+        followId = cur.fetchone()
+        if followId:
+            cur.execute("""
+                        DELETE 
+                        FROM follow
+                        WHERE id = %s
+                        """, (followId[0],))
+        else:
+            followUuid = str(uuid.uuid4())
+            cur.execute("INSERT INTO follow(id,user_id,follow_id) VALUES(%s,%s,%s)",
+                        (followUuid, session["userId"], followData["followId"]))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({"state": "success"}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"state": "failed"}), 400
+
+@app.route("/followList", methods=["POST"])
+def followList():
+    followIdData = request.get_json()
+    try:
+        conn = mysql_conn()
+        cur = conn.cursor()
+        # フォローデータ
+        cur.execute("""
+                    SELECT follow.follow_id, user.username, user.profileText, user.profileIcon
+                    FROM follow
+                    INNER JOIN user ON user.id = follow.follow_id
+                    WHERE user_id = %s
+                    """, (followIdData["followId"],))
+        followList = cur.fetchall()
+        # フォロワーデータ
+        cur.execute("""
+                    SELECT follow.user_id, user.username, user.profileText, user.profileIcon
+                    FROM follow
+                    INNER JOIN user ON user.id = follow.user_id
+                    WHERE follow_id = %s
+                    """, (followIdData["followId"],))
+        followerList = cur.fetchall()
+        print(followList,followerList)
+        return jsonify({"state":"success", "followList":followList, "followerList":followerList}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"state":"failed", "followList":False, "followerList":False}), 400
+
 
 if __name__ == "__main__":
     app.run(debug=True)
