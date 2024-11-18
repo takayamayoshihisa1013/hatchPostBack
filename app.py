@@ -188,7 +188,7 @@ def changeProfile():
         cur = conn.cursor()
         cur.execute("""
                     UPDATE user
-                    SET 
+                    SET
                         username = %s,
                         profileText = %s
                     WHERE id = %s
@@ -234,6 +234,7 @@ def follow():
         print(e)
         return jsonify({"state": "failed"}), 400
 
+
 @app.route("/followList", methods=["POST"])
 def followList():
     followIdData = request.get_json()
@@ -256,11 +257,29 @@ def followList():
                     WHERE follow_id = %s
                     """, (followIdData["followId"],))
         followerList = cur.fetchall()
-        print(followList,followerList)
-        return jsonify({"state":"success", "followList":followList, "followerList":followerList}), 200
+        print(followList, followerList)
+        return jsonify({"state": "success", "followList": followList, "followerList": followerList}), 200
     except Exception as e:
         print(e)
-        return jsonify({"state":"failed", "followList":False, "followerList":False}), 400
+        return jsonify({"state": "failed", "followList": False, "followerList": False}), 400
+
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.get_json()
+    try:
+        conn = mysql_conn()
+        cur = conn.cursor()
+        cur.execute("""
+                    SELECT content
+                    FROM chat
+                    WHERE (user_id = %s AND friend_id = %s) OR (user_id = %s AND friend_id = %s)
+                    """, (session["userId"], data["friendId"], data["friendId"], session["userId"]))
+        chatData = cur.fetchall()
+        return jsonify({"state":"success", "chatData":chatData}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({}), 400
 
 
 if __name__ == "__main__":

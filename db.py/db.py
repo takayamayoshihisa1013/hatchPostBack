@@ -42,4 +42,31 @@ cur.execute("""
             )
             """)
 
+cur.execute("""
+            CREATE TABLE IF NOT EXISTS chatList (
+                id VARCHAR(36) PRIMARY KEY,
+                user_id VARCHAR(36),
+                friend_id VARCHAR(36),
+                FOREIGN KEY(user_id) REFERENCES user(id),
+                FOREIGN KEY(friend_id) REFERENCES user(id),
+                UNIQUE(user_id, friend_id)
+            )
+            """)
+
+cur.execute("""
+            CREATE TABLE IF NOT EXISTS chat (
+                id VARCHAR(36) PRIMARY KEY,
+                user_id VARCHAR(36),
+                friend_id VARCHAR(36),
+                content Text,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(user_id) REFERENCES user(id),
+                FOREIGN KEY(friend_id) REFERENCES user(id)
+            )
+            """)
+
+# cur.execute("""
+#             CREATE TABLE IF NOT EXITS 
+#             """)
+
 conn.commit()
