@@ -31,6 +31,20 @@ cur.execute("""
             )
             """)
 
+
+
+
+cur.execute("""
+            CREATE TABLE IF NOT EXISTS heart(
+                id VARCHAR(36) PRIMARY KEY,
+                post_id VARCHAR(36),
+                user_id VARCHAR(36),
+                FOREIGN KEY (user_id) REFERENCES user(id),
+                FOREIGN KEY (post_id) REFERENCES post(id),
+                UNIQUE(user_id, post_id)
+            )
+            """)
+
 cur.execute("""
             CREATE TABLE IF NOT EXISTS follow (
                 id VARCHAR(36) PRIMARY KEY,
@@ -65,8 +79,27 @@ cur.execute("""
             )
             """)
 
-# cur.execute("""
-#             CREATE TABLE IF NOT EXITS 
-#             """)
+cur.execute("""
+            CREATE TABLE IF NOT EXISTS chatRequest(
+                id VARCHAR(36) PRIMARY KEY,
+                user_id VARCHAR(36),
+                friend_id VARCHAR(36),
+                FOREIGN KEY(user_id) REFERENCES user(id),
+                FOREIGN KEY(friend_id) REFERENCES user(id),
+                UNIQUE(user_id, friend_id)
+            )
+            """)
+
+cur.execute("""
+            CREATE TABLE IF NOT EXISTS comment(
+                id VARCHAR(36) PRIMARY KEY,
+                post_id VARCHAR(36),
+                user_id VARCHAR(36),
+                commentContent TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(user_id) REFERENCES user(id),
+                FOREIGN KEY(post_id) REFERENCES post(id)
+            )
+            """)
 
 conn.commit()
