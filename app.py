@@ -116,29 +116,46 @@ def postData():
     conn = mysql_conn()
     cur = conn.cursor()
     # ポストデータ
-    cur.execute("""
-                SELECT 
-                    user.id AS user_id, 
-                    user.username, 
-                    post.postContent, 
-                    post.created_at,
-                    post.id AS post_id,
-                    COALESCE(COUNT(heart.post_id), 0) AS heart_count,
-                    CASE 
-                        WHEN EXISTS (
-                            SELECT 1 
-                            FROM heart 
-                            WHERE heart.post_id = post.id AND heart.user_id = %s
-                        ) THEN 1
-                        ELSE 0
-                    END AS is_liked
-                FROM post
-                INNER JOIN user ON user.id = post.user_id
-                LEFT JOIN heart ON post.id = heart.post_id
-                GROUP BY post.id, user.id, user.username, post.postContent, post.created_at
-                ORDER BY post.created_at DESC;
-                """, (session["userId"],))
-    postData = cur.fetchall()
+    if "userId" in session:
+        cur.execute("""
+                    SELECT 
+                        user.id AS user_id, 
+                        user.username, 
+                        post.postContent, 
+                        post.created_at,
+                        post.id AS post_id,
+                        COALESCE(COUNT(heart.post_id), 0) AS heart_count,
+                        CASE 
+                            WHEN EXISTS (
+                                SELECT 1 
+                                FROM heart 
+                                WHERE heart.post_id = post.id AND heart.user_id = %s
+                            ) THEN 1
+                            ELSE 0
+                        END AS is_liked
+                    FROM post
+                    INNER JOIN user ON user.id = post.user_id
+                    LEFT JOIN heart ON post.id = heart.post_id
+                    GROUP BY post.id, user.id, user.username, post.postContent, post.created_at
+                    ORDER BY post.created_at DESC;
+                    """, (session["userId"],))
+        postData = cur.fetchall()
+    else:
+        cur.execute("""
+                    SELECT 
+                        user.id AS user_id, 
+                        user.username, 
+                        post.postContent, 
+                        post.created_at,
+                        post.id AS post_id,
+                        COALESCE(COUNT(heart.post_id), 0) AS heart_count
+                    FROM post
+                    INNER JOIN user ON user.id = post.user_id
+                    LEFT JOIN heart ON post.id = heart.post_id
+                    GROUP BY post.id, user.id, user.username, post.postContent, post.created_at
+                    ORDER BY post.created_at DESC;
+                    """)
+        postData = cur.fetchall()
     
     return jsonify({"state": "success", "postData": postData}), 200
 
@@ -204,22 +221,27 @@ def profile():
                     WHERE post.user_id = %s
                     """, (profileUserId["profileUserId"],))
         postData = cur.fetchall()
-        # 自分かどうか
-        if profileUserId["profileUserId"] != session["userId"]:
-            # フォローしているかどうか
-            cur.execute("""
-                        SELECT *
-                        FROM follow
-                        WHERE user_id = %s AND follow_id = %s
-                        """, (session["userId"], profileUserId["profileUserId"]))
-            followStateCheck = cur.fetchone()
-            if followStateCheck:
-                return jsonify({"state": "success", "postData": postData, "profileData": profileData, "myself": False, "followState": True, "followData": followData}), 200
+        # ログインしているか
+        if "userId" in session:
+            # 自分かどうか
+            if profileUserId["profileUserId"] != session["userId"]:
+                # フォローしているかどうか
+                cur.execute("""
+                            SELECT *
+                            FROM follow
+                            WHERE user_id = %s AND follow_id = %s
+                            """, (session["userId"], profileUserId["profileUserId"]))
+                followStateCheck = cur.fetchone()
+                # フォロー存在確認
+                if followStateCheck:
+                    return jsonify({"state": "success", "postData": postData, "profileData": profileData, "myself": False, "followState": True, "followData": followData}), 200
+                else:
+                    return jsonify({"state": "success", "postData": postData, "profileData": profileData, "myself": False, "followState": False, "followData": followData}), 200
             else:
-                return jsonify({"state": "success", "postData": postData, "profileData": profileData, "myself": False, "followState": False, "followData": followData}), 200
+                return jsonify({"state": "success", "postData": postData, "profileData": profileData, "myself": True, "followState": "myself", "followData": followData}), 200
+        # ログインしていなかった場合
         else:
-            return jsonify({"state": "success", "postData": postData, "profileData": profileData, "myself": True, "followState": "myself", "followData": followData}), 200
-
+            return jsonify({"state": "success", "postData": postData, "profileData": profileData, "myself": False, "followState": "notLogin", "followData": followData}), 200
     except Exception as e:
         print(e)
         return jsonify({"state": "failed"}), 400
