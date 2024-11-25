@@ -207,7 +207,7 @@ def profile():
         profileData = cur.fetchone()
         # フォロー・フォロワーデータ
         cur.execute("""
-                    SELECT 
+                    SELECT
                         COUNT(CASE WHEN user_id = %s THEN 1 ELSE NULL END) AS follow_count,
                         COUNT(CASE WHEN follow_id = %s THEN 1 ELSE NULL END) AS follower_count
                     FROM follow
@@ -260,7 +260,6 @@ def changeProfile():
                         profileText = %s
                     WHERE id = %s
                     """, (changeProfileData["changeUsername"], changeProfileData["changeProfileText"], session["userId"]))
-
         conn.commit()
         cur.close()
         conn.close()
