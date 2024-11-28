@@ -7,7 +7,7 @@ import json
 import uuid
 
 # corsを使う
-# from flask_cors import CORS
+from flask_cors import CORS
 
 # mysql接続
 
@@ -32,8 +32,8 @@ app.secret_key = "secret!"
 # CORSの設定
 # "http://localhost:3000"をすべてのエンドポイントで許可する
 # また、クッキーを含めたリクエストを許可する
-# CORS(app, resources={
-#     r"/*": {"origins": "polite-tree-0d2231d00.5.azurestaticapps.net"}}, supports_credentials=True)
+CORS(app, resources={
+    r"/*": {"origins": "polite-tree-0d2231d00.5.azurestaticapps.net"}}, supports_credentials=True)
 
 
 # 左側のプロフィール
