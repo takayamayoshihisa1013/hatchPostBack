@@ -33,7 +33,7 @@ app.secret_key = "secret!"
 # "http://localhost:3000"をすべてのエンドポイントで許可する
 # また、クッキーを含めたリクエストを許可する
 CORS(app, resources={
-    r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+    r"/*": {"origins": "polite-tree-0d2231d00.5.azurestaticapps.net"}}, supports_credentials=True)
 
 
 # 左側のプロフィール
