@@ -511,6 +511,10 @@ def newComment():
     except Exception as e:
         print(e)
         return jsonify({"state": "failed", "error": str(e)}), 400
+    
+@app.route("/test")
+def test():
+    return "test"
 
 
 if __name__ == "__main__":
