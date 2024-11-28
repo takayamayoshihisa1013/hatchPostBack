@@ -1,6 +1,6 @@
 from flask import Flask, url_for, render_template, session, jsonify, request
 import mysql.connector
-
+import os
 import json
 
 # idにUUIDを使用する
@@ -10,12 +10,16 @@ import uuid
 from flask_cors import CORS
 
 # mysql接続
+
+
 def mysql_conn():
     conn = mysql.connector.connect(
-        db="hatchPost",
-        user="root",
-        host="localhost",
+        host="hatchpost-server.mysql.database.azure.com",
         port=3306,
+        user="plmfutylzv",
+        password="Yosshi20031013",
+        ssl_ca="./DigiCertGlobalRootG2.crt.pem",
+        database="hatchpost-database"
     )
     return conn
 
@@ -23,6 +27,7 @@ def mysql_conn():
 app = Flask(__name__)
 
 app.secret_key = "secret!"
+
 
 # CORSの設定
 # "http://localhost:3000"をすべてのエンドポイントで許可する
@@ -51,6 +56,8 @@ def rightProfile():
         return jsonify({"login": False, "profileData": ("-", "ゲスト")}), 200
 
 # ユーザー登録
+
+
 @app.route("/newUser", methods=["POST"])
 def newUser():
     newUserData = request.get_json()
@@ -71,6 +78,8 @@ def newUser():
         return jsonify({"message": "error"}), 400
 
 # ログイン
+
+
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -93,15 +102,22 @@ def login():
         return jsonify({"state": "failed"}), 400
 
 # ポスト投稿
+
+
 @app.route("/newPost", methods=["POST"])
 def newPost():
+    postContent = request.form.get("postContent")
+    imageList = request.files
+    print(imageList, postContent)
     try:
-        postData = request.get_json()
         conn = mysql_conn()
         cur = conn.cursor()
         postUuid = str(uuid.uuid4())
         cur.execute("INSERT INTO post(id,user_id,postContent) VALUES(%s,%s,%s)",
-                    (postUuid, session["userId"], postData["postContent"]))
+                    (postUuid, session["userId"], postContent))
+        UPLOAD_FOLDER = "./src/images"
+        os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
         conn.commit()
         cur.close()
         conn.close()
@@ -111,6 +127,8 @@ def newPost():
         return jsonify({"state": "filed"})
 
 # ポストデータ
+
+
 @app.route("/postData", methods=["POST"])
 def postData():
     conn = mysql_conn()
@@ -156,10 +174,12 @@ def postData():
                     ORDER BY post.created_at DESC;
                     """)
         postData = cur.fetchall()
-    
+
     return jsonify({"state": "success", "postData": postData}), 200
 
 # いいね処理
+
+
 @app.route("/heart", methods=["POST"])
 def heart():
     data = request.get_json()
@@ -180,17 +200,19 @@ def heart():
                         """, (heartExist[0],))
         else:
             heartUuid = str(uuid.uuid4())
-            cur.execute("INSERT INTO heart(id,post_id,user_id) VALUES(%s,%s,%s)", 
-                (heartUuid,data["postId"],session["userId"]))
+            cur.execute("INSERT INTO heart(id,post_id,user_id) VALUES(%s,%s,%s)",
+                        (heartUuid, data["postId"], session["userId"]))
         conn.commit()
         cur.close()
         conn.close()
-        return jsonify({"state":"success"}), 200
+        return jsonify({"state": "success"}), 200
     except Exception as e:
         print(e)
-        return jsonify({"state":"failed"}), 400
+        return jsonify({"state": "failed"}), 400
 
 # プロフィールデータ
+
+
 @app.route("/profile", methods=["POST"])
 def profile():
     profileUserId = request.get_json()
@@ -247,6 +269,8 @@ def profile():
         return jsonify({"state": "failed"}), 400
 
 # プロフィール変更
+
+
 @app.route("/changeProfile", methods=["POST"])
 def changeProfile():
     changeProfileData = request.get_json()
@@ -270,6 +294,8 @@ def changeProfile():
         return jsonify({"state": "failed"}), 400
 
 # フォロー
+
+
 @app.route("/follow", methods=["POST"])
 def follow():
     followData = request.get_json()
@@ -301,6 +327,8 @@ def follow():
         return jsonify({"state": "failed"}), 400
 
 # フォロー・フォロワーデータ
+
+
 @app.route("/followList", methods=["POST"])
 def followList():
     followIdData = request.get_json()
@@ -330,6 +358,8 @@ def followList():
         return jsonify({"state": "failed", "followList": False, "followerList": False}), 400
 
 # チャットの追加
+
+
 @app.route("/makeNewChat", methods=["POST"])
 def makeNewChat():
     data = request.get_json()
@@ -347,17 +377,19 @@ def makeNewChat():
             # 存在しなかったら追加
             chatUuid = str(uuid.uuid4())
             cur.execute("INSERT INTO chatList(id,user_id,friend_id) VALUES(%s,%s,%s)",
-                        (chatUuid,session["userId"],data["friendId"]))
+                        (chatUuid, session["userId"], data["friendId"]))
             conn.commit()
             cur.close()
             conn.close()
-            
-        return jsonify({"state":"success"}), 200
+
+        return jsonify({"state": "success"}), 200
     except Exception as e:
         print(e)
-        return jsonify({"error":e}), 400
+        return jsonify({"error": e}), 400
 
 # チャットデータ
+
+
 @app.route("/chat", methods=["POST"])
 def chat():
     my = session["userId"]
@@ -373,7 +405,7 @@ def chat():
                     ORDER BY chat.created_at ASC
                     """, (my, data["friendId"], data["friendId"], my))
         chatData = cur.fetchall()
-        
+
         # 新しく自分かどうかを含めたデータを作る
         newChatData = []
         for row in chatData:
@@ -382,11 +414,12 @@ def chat():
             else:
                 newChatData.append((row + ("friend",)))
         print(chatData)
-            
-        return jsonify({"state":"success", "chatData":newChatData}), 200
+
+        return jsonify({"state": "success", "chatData": newChatData}), 200
     except Exception as e:
         print(e)
         return jsonify({}), 400
+
 
 @app.route("/chatListData", methods=["POST"])
 def chatListData():
@@ -404,12 +437,14 @@ def chatListData():
                     """, (session["userId"], session["userId"]))
         chatListData = cur.fetchall()
         # print(chatListData[1])
-        return jsonify({"chatListData":chatListData}), 200
+        return jsonify({"chatListData": chatListData}), 200
     except Exception as e:
         print(e)
         return jsonify({}), 400
 
 # 新しいチャットのコメント
+
+
 @app.route("/newChatContent", methods=["POST"])
 def newChatContent():
     data = request.get_json()
@@ -427,6 +462,7 @@ def newChatContent():
     except Exception as e:
         print(e)
         return jsonify({})
+
 
 @app.route("/comment", methods=["POST"])
 def comment():
@@ -455,12 +491,13 @@ def comment():
         return jsonify({"state": "success", "commentData": commentData, "subjectPost": subjectPost}), 200
     except Exception as e:
         print(e)
-        return jsonify({"state":"failed", "error": str(e)}), 400
+        return jsonify({"state": "failed", "error": str(e)}), 400
+
 
 @app.route("/newComment", methods=["POST"])
 def newComment():
     data = request.get_json()
-    try :
+    try:
         conn = mysql_conn()
         cur = conn.cursor()
         commentUuid = str(uuid.uuid4())
@@ -474,6 +511,7 @@ def newComment():
     except Exception as e:
         print(e)
         return jsonify({"state": "failed", "error": str(e)}), 400
+
 
 if __name__ == "__main__":
     app.run(debug=True)
