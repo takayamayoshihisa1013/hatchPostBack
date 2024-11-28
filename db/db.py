@@ -1,22 +1,22 @@
 import mysql.connector
 
-# conn = mysql.connector.connect(
-#     host="hatchpost-server.mysql.database.azure.com",
-#     port=3306,
-#     user="plmfutylzv",
-#     password="Yosshi20031013",
-#     ssl_ca="./DigiCertGlobalRootG2.crt.pem",
-#     database="hatchpost-database"
-# )
-
 conn = mysql.connector.connect(
-    host="localhost",
+    host="hatchpost-server.mysql.database.azure.com",
     port=3306,
-    user="root",
-    password="",
-    # ssl_ca="./DigiCertGlobalRootG2.crt.pem",
-    database="hatchpost"
+    user="plmfutylzv",
+    password="Yosshi20031013",
+    ssl_ca="./DigiCertGlobalRootG2.crt.pem",
+    database="hatchpost-database"
 )
+
+# conn = mysql.connector.connect(
+#     host="localhost",
+#     port=3306,
+#     user="root",
+#     password="",
+#     # ssl_ca="./DigiCertGlobalRootG2.crt.pem",
+#     database="hatchpost"
+# )
 
 cur = conn.cursor()
 
@@ -119,5 +119,13 @@ tables = cur.fetchall()
 print("データベース内のテーブル一覧:")
 for table in tables:
     print(table[0])
+
+# cur.execute("""
+#             SELECT *
+#             FROM user
+#             """)
+
+# list = cur.fetchall()
+# print(list)
 
 conn.commit()

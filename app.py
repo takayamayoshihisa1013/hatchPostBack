@@ -75,7 +75,7 @@ def newUser():
         return jsonify({"message": "success"}), 200
     except Exception as e:
         print(e)
-        return jsonify({"message": "error"}), 400
+        return jsonify({"message": "error", "error":str(e)}), 400
 
 # ログイン
 
