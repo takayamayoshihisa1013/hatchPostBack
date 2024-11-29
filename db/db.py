@@ -120,12 +120,12 @@ print("データベース内のテーブル一覧:")
 for table in tables:
     print(table[0])
 
-# cur.execute("""
-#             SELECT *
-#             FROM user
-#             """)
+cur.execute("""
+            SELECT *
+            FROM user
+            """)
 
-# list = cur.fetchall()
-# print(list)
+list = cur.fetchall()
+print(list)
 
 conn.commit()

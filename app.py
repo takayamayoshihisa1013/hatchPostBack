@@ -10,8 +10,6 @@ import uuid
 from flask_cors import CORS
 
 # mysql接続
-
-
 def mysql_conn():
     conn = mysql.connector.connect(
         host="hatchpost-server.mysql.database.azure.com",
@@ -22,6 +20,13 @@ def mysql_conn():
         database="hatchpost-database"
     )
     return conn
+
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "https://polite-tree-0d2231d00.5.azurestaticapps.net"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    return response
 
 
 app = Flask(__name__)
@@ -132,6 +137,9 @@ def newPost():
 def postData():
     conn = mysql_conn()
     cur = conn.cursor()
+    if request.method == 'OPTIONS':
+        # プリフライトリクエストへの応答
+        return '', 200
     # ポストデータ
     if "userId" in session:
         cur.execute("""
