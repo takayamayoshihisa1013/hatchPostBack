@@ -533,6 +533,11 @@ def newComment():
 def test():
     return "test"
 
+@app.route("/sendTest", methods=["POST"])
+def sendTest():
+    
+    return jsonify({"happy":"happy"}), 200
+
 
 if __name__ == "__main__":
     app.run(debug=True)
