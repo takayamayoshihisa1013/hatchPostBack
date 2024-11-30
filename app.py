@@ -10,7 +10,10 @@ import uuid
 from flask_cors import CORS
 
 # mysql接続
+
+
 def mysql_conn():
+
     conn = mysql.connector.connect(
         host="hatchpost-server.mysql.database.azure.com",
         port=3306,
@@ -19,14 +22,18 @@ def mysql_conn():
         ssl_ca="./DigiCertGlobalRootG2.crt.pem",
         database="hatchpost-database"
     )
+    # conn = mysql.connector.connect(
+    #     host="localhost",
+    #     port=3306,
+    #     user="root",
+    #     password="",
+    #     # ssl_ca="./DigiCertGlobalRootG2.crt.pem",
+    #     database="hatchpost"
+    # )
     return conn
 
-def add_cors_headers(response):
-    response.headers["Access-Control-Allow-Origin"] = "https://polite-tree-0d2231d00.5.azurestaticapps.net"
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    return response
+
+
 
 
 app = Flask(__name__)
@@ -37,10 +44,17 @@ app.secret_key = "secret!"
 # CORSの設定
 # "http://localhost:3000"をすべてのエンドポイントで許可する
 # また、クッキーを含めたリクエストを許可する
+# CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+# CORS(app, resources={r"/*": {"origins": "https://wonderful-beach-05c090300.4.azurestaticapps.net"}}, supports_credentials=True)
+# CORS(app, resources={
+#     r"/*": {"origins": "https://polite-tree-0d2231d00.5.azurestaticapps.net"}}, supports_credentials=True)
 CORS(app, resources={
-    r"/*": {"origins": "https://polite-tree-0d2231d00.5.azurestaticapps.net"}}, supports_credentials=True)
+    r"/*": {"origins": "https://ambitious-cliff-09a302f00.4.azurestaticapps.net"}}, supports_credentials=True)
+
 
 # 左側のプロフィール
+
+
 @app.route("/rightProfile", methods=["POST"])
 def rightProfile():
     if "userId" in session:
@@ -79,7 +93,7 @@ def newUser():
         return jsonify({"message": "success"}), 200
     except Exception as e:
         print(e)
-        return jsonify({"message": "error", "error":str(e)}), 400
+        return jsonify({"message": "error", "error": str(e)}), 400
 
 # ログイン
 
@@ -137,9 +151,7 @@ def newPost():
 def postData():
     conn = mysql_conn()
     cur = conn.cursor()
-    if request.method == 'OPTIONS':
-        # プリフライトリクエストへの応答
-        return '', 200
+    
     # ポストデータ
     if "userId" in session:
         cur.execute("""
@@ -518,10 +530,12 @@ def newComment():
     except Exception as e:
         print(e)
         return jsonify({"state": "failed", "error": str(e)}), 400
-    
+
+
 @app.route("/test")
 def test():
     return "test"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
