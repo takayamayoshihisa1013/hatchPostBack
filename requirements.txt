@@ -1,4 +1,4 @@
 Flask
 mysql
 mysql-connector-python
-flask_cors
+flask-cors
