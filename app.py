@@ -42,9 +42,6 @@ app.secret_key = "secret!"
 # "http://localhost:3000"をすべてのエンドポイントで許可する
 # また、クッキーを含めたリクエストを許可する
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
-# CORS(app, resources={r"/*": {"origins": "https://wonderful-beach-05c090300.4.azurestaticapps.net"}}, supports_credentials=True)
-# CORS(app, resources={
-#     r"/*": {"origins": "https://polite-tree-0d2231d00.5.azurestaticapps.net"}}, supports_credentials=True)
 CORS(app, resources={
     r"/*": {"origins": "https://ambitious-cliff-09a302f00.4.azurestaticapps.net"}}, supports_credentials=True)
 
