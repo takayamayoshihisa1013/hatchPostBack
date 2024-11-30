@@ -530,9 +530,10 @@ def newComment():
 def test():
     return "test"
 
-@app.route("/sendTest", methods=["POST"])
+@app.route("/sendTest", methods=["POST", "OPTIONS"])
 def sendTest():
-    
+    if request.method == 'OPTIONS':
+        return '', 204  # プリフライトリクエストへの応答
     return jsonify({"happy":"happy"}), 200
 
 
