@@ -33,9 +33,6 @@ def mysql_conn():
     return conn
 
 
-
-
-
 app = Flask(__name__)
 
 app.secret_key = "secret!"
@@ -151,7 +148,7 @@ def newPost():
 def postData():
     conn = mysql_conn()
     cur = conn.cursor()
-    
+
     # ポストデータ
     if "userId" in session:
         cur.execute("""
