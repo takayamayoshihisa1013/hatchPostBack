@@ -42,12 +42,12 @@ app.secret_key = "secret!"
 # "http://localhost:3000"をすべてのエンドポイントで許可する
 # また、クッキーを含めたリクエストを許可する
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
-# CORS(app, resources={
-#     r"/*": {"origins": "https://ambitious-cliff-09a302f00.4.azurestaticapps.net"}}, supports_credentials=True)
+CORS(app, resources={
+    r"/*": {"origins": "https://ambitious-cliff-09a302f00.4.azurestaticapps.net"}}, supports_credentials=True)
 
 @app.after_request
 def add_cors_headers(response):
-    response.headers.add('Access-Control-Allow-Origin', 'https://ambitious-cliff-09a302f00.4.azurestaticapps.net')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
