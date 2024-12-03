@@ -107,7 +107,7 @@ def login():
             print("userID:" + session["userId"])
             return jsonify({"state": "success"}), 200
         else:
-            
+            print("userID:" + "database not found")
             return jsonify({"state": "notfound"}), 200
     except Exception as e:
         print("error:" + str(e))
