@@ -59,6 +59,7 @@ def rightProfile():
             profileData = cur.fetchone()
             return jsonify({"login": True, "profileData": profileData}), 200
         except Exception as e:
+            print("error:" + e)
             return jsonify({"login": False, "profileData": ("-", "Error")}), 400
     else:
         return jsonify({"login": False, "profileData": ("-", "ゲスト")}), 200
@@ -132,7 +133,7 @@ def newPost():
         conn.close()
         return jsonify({"state": "successful"}), 200
     except Exception as e:
-        print(e)
+        print("error:" + e)
         return jsonify({"state": "filed"}), 400
 
 # ポストデータ
@@ -188,8 +189,8 @@ def postData():
 
         return jsonify({"state": "success", "postData": postData}), 200
     except Exception as e:
-        print(e)
-        return jsonify({"state": "success", "postData": [], "error":str(e)}), 200
+        print("error:" + e)
+        return jsonify({"state": "success", "postData": [], "error":str(e)}), 400
 
 # いいね処理
 @app.route("/heart", methods=["POST"])
