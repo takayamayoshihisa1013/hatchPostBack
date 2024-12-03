@@ -139,52 +139,55 @@ def newPost():
 
 @app.route("/postData", methods=["POST"])
 def postData():
-    conn = mysql_conn()
-    cur = conn.cursor()
+    try:
+        conn = mysql_conn()
+        cur = conn.cursor()
 
-    # ポストデータ
-    if "userId" in session:
-        cur.execute("""
-                    SELECT 
-                        user.id AS user_id, 
-                        user.username, 
-                        post.postContent, 
-                        post.created_at,
-                        post.id AS post_id,
-                        COALESCE(COUNT(heart.post_id), 0) AS heart_count,
-                        CASE 
-                            WHEN EXISTS (
-                                SELECT 1 
-                                FROM heart 
-                                WHERE heart.post_id = post.id AND heart.user_id = %s
-                            ) THEN 1
-                            ELSE 0
-                        END AS is_liked
-                    FROM post
-                    INNER JOIN user ON user.id = post.user_id
-                    LEFT JOIN heart ON post.id = heart.post_id
-                    GROUP BY post.id, user.id, user.username, post.postContent, post.created_at
-                    ORDER BY post.created_at DESC;
-                    """, (session["userId"],))
-        postData = cur.fetchall()
-    else:
-        cur.execute("""
-                    SELECT 
-                        user.id AS user_id, 
-                        user.username, 
-                        post.postContent, 
-                        post.created_at,
-                        post.id AS post_id,
-                        COALESCE(COUNT(heart.post_id), 0) AS heart_count
-                    FROM post
-                    INNER JOIN user ON user.id = post.user_id
-                    LEFT JOIN heart ON post.id = heart.post_id
-                    GROUP BY post.id, user.id, user.username, post.postContent, post.created_at
-                    ORDER BY post.created_at DESC;
-                    """)
-        postData = cur.fetchall()
+        # ポストデータ
+        if "userId" in session:
+            cur.execute("""
+                        SELECT 
+                            user.id AS user_id, 
+                            user.username, 
+                            post.postContent, 
+                            post.created_at,
+                            post.id AS post_id,
+                            COALESCE(COUNT(heart.post_id), 0) AS heart_count,
+                            CASE 
+                                WHEN EXISTS (
+                                    SELECT 1 
+                                    FROM heart 
+                                    WHERE heart.post_id = post.id AND heart.user_id = %s
+                                ) THEN 1
+                                ELSE 0
+                            END AS is_liked
+                        FROM post
+                        INNER JOIN user ON user.id = post.user_id
+                        LEFT JOIN heart ON post.id = heart.post_id
+                        GROUP BY post.id, user.id, user.username, post.postContent, post.created_at
+                        ORDER BY post.created_at DESC;
+                        """, (session["userId"],))
+            postData = cur.fetchall()
+        else:
+            cur.execute("""
+                        SELECT 
+                            user.id AS user_id, 
+                            user.username, 
+                            post.postContent, 
+                            post.created_at,
+                            post.id AS post_id,
+                            COALESCE(COUNT(heart.post_id), 0) AS heart_count
+                        FROM post
+                        INNER JOIN user ON user.id = post.user_id
+                        LEFT JOIN heart ON post.id = heart.post_id
+                        GROUP BY post.id, user.id, user.username, post.postContent, post.created_at
+                        ORDER BY post.created_at DESC;
+                        """)
+            postData = cur.fetchall()
 
-    return jsonify({"state": "success", "postData": postData}), 200
+        return jsonify({"state": "success", "postData": postData}), 200
+    except Exception as e:
+        return jsonify({"state": "success", "postData": [], "error":str(e)}), 200
 
 # いいね処理
 
