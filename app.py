@@ -132,7 +132,7 @@ def newPost():
         return jsonify({"state": "successful"}), 200
     except Exception as e:
         print(e)
-        return jsonify({"state": "filed"})
+        return jsonify({"state": "filed"}), 400
 
 # ポストデータ
 

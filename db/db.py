@@ -122,7 +122,7 @@ for table in tables:
 
 cur.execute("""
             SELECT *
-            FROM user
+            FROM post
             """)
 
 list = cur.fetchall()
