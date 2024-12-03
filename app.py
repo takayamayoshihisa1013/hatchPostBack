@@ -103,7 +103,7 @@ def login():
         existCheckUser = cur.fetchone()
         if existCheckUser:
             session["userId"] = existCheckUser[0]
-            print(session["userId"])
+            print("ユーザーID：" + session["userId"])
             return jsonify({"state": "success"}), 200
         else:
             return jsonify({"state": "notfound"}), 200
