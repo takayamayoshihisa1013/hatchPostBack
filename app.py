@@ -103,6 +103,7 @@ def login():
         existCheckUser = cur.fetchone()
         if existCheckUser:
             session["userId"] = existCheckUser[0]
+            print(session["userId"])
             return jsonify({"state": "success"}), 200
         else:
             return jsonify({"state": "notfound"}), 200
@@ -125,7 +126,6 @@ def newPost():
                     (postUuid, session["userId"], postContent))
         UPLOAD_FOLDER = "./src/images"
         os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
         conn.commit()
         cur.close()
         conn.close()
