@@ -59,7 +59,7 @@ def rightProfile():
             profileData = cur.fetchone()
             return jsonify({"login": True, "profileData": profileData}), 200
         except Exception as e:
-            print("error:" + e)
+            print("error:" + str(e))
             return jsonify({"login": False, "profileData": ("-", "Error")}), 400
     else:
         return jsonify({"login": False, "profileData": ("-", "ゲスト")}), 200
@@ -83,7 +83,7 @@ def newUser():
         session["userId"] = userUuid
         return jsonify({"message": "success"}), 200
     except Exception as e:
-        print(e)
+        print("error:" + str(e))
         return jsonify({"message": "error", "error": str(e)}), 400
 
 # ログイン
@@ -109,7 +109,8 @@ def login():
         else:
             
             return jsonify({"state": "notfound"}), 200
-    except:
+    except Exception as e:
+        print("error:" + str(e))
         return jsonify({"state": "failed"}), 400
 
 # ポスト投稿
@@ -133,7 +134,7 @@ def newPost():
         conn.close()
         return jsonify({"state": "successful"}), 200
     except Exception as e:
-        print("error:" + e)
+        print("error:" + str(e))
         return jsonify({"state": "filed"}), 400
 
 # ポストデータ
@@ -144,9 +145,10 @@ def postData():
     try:
         conn = mysql_conn()
         cur = conn.cursor()
-        print(session["userId"])
+        
         # ポストデータ
         if "userId" in session:
+            print(session["userId"])
             cur.execute("""
                         SELECT 
                             user.id AS user_id, 
@@ -189,7 +191,7 @@ def postData():
 
         return jsonify({"state": "success", "postData": postData}), 200
     except Exception as e:
-        print("error:" + e)
+        print("error:" + str(e))
         return jsonify({"state": "success", "postData": [], "error":str(e)}), 400
 
 # いいね処理
