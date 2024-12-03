@@ -142,7 +142,7 @@ def postData():
     try:
         conn = mysql_conn()
         cur = conn.cursor()
-
+        print(session["userId"])
         # ポストデータ
         if "userId" in session:
             cur.execute("""
