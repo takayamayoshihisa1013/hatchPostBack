@@ -103,9 +103,10 @@ def login():
         existCheckUser = cur.fetchone()
         if existCheckUser:
             session["userId"] = existCheckUser[0]
-            print("ユーザーID：" + session["userId"])
+            print("userID:" + session["userId"])
             return jsonify({"state": "success"}), 200
         else:
+            
             return jsonify({"state": "notfound"}), 200
     except:
         return jsonify({"state": "failed"}), 400
@@ -187,11 +188,10 @@ def postData():
 
         return jsonify({"state": "success", "postData": postData}), 200
     except Exception as e:
+        print(e)
         return jsonify({"state": "success", "postData": [], "error":str(e)}), 200
 
 # いいね処理
-
-
 @app.route("/heart", methods=["POST"])
 def heart():
     data = request.get_json()
