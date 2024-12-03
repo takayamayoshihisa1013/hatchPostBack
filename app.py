@@ -1,11 +1,8 @@
 from flask import Flask, url_for, render_template, session, jsonify, request
 import mysql.connector
 import os
-import json
-
 # idにUUIDを使用する
 import uuid
-
 # corsを使う
 from flask_cors import CORS
 
@@ -48,8 +45,6 @@ CORS(app, resources={
 
 
 # 左側のプロフィール
-
-
 @app.route("/rightProfile", methods=["POST"])
 def rightProfile():
     if "userId" in session:
