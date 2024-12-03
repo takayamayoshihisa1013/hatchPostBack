@@ -1,4 +1,5 @@
 from flask import Flask, url_for, render_template, session, jsonify, request
+from flask_session import Session
 import mysql.connector
 import os
 # idにUUIDを使用する
@@ -6,9 +7,9 @@ import uuid
 # corsを使う
 from flask_cors import CORS
 
+from datetime import timedelta
+
 # mysql接続
-
-
 def mysql_conn():
 
     conn = mysql.connector.connect(
@@ -32,7 +33,13 @@ def mysql_conn():
 
 app = Flask(__name__)
 
-app.secret_key = "secret!"
+# セッション設定
+app.secret_key = 'yosshi20031013'  # 必須（セッション暗号化用）
+app.config['SESSION_TYPE'] = 'filesystem'  # セッションをファイルシステムに保存する
+app.config['SESSION_PERMANENT'] = True  # 永続的なセッション
+app.permanent_session_lifetime = timedelta(days=1)  # セッションの有効期限
+# セッションの管理
+Session(app)
 
 
 # CORSの設定
