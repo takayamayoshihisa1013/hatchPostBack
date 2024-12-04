@@ -34,6 +34,7 @@ def mysql_conn():
 app = Flask(__name__)
 
 # Flask-Session設定
+app.config["SECRET_KEY"] = os.urandom(24)
 app.config["SESSION_TYPE"] = "filesystem"  # ファイルベースのセッション管理
 app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # 保存場所
 app.config["SESSION_PERMANENT"] = True  # 永続セッション
