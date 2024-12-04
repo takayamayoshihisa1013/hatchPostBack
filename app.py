@@ -33,13 +33,15 @@ def mysql_conn():
 
 app = Flask(__name__)
 
-# セッション設定
-app.secret_key = 'yosshi20031013'  # 必須（セッション暗号化用）
-app.config['SESSION_TYPE'] = 'filesystem'  # セッションをファイルシステムに保存する
-app.config['SESSION_PERMANENT'] = True  # 永続的なセッション
-app.permanent_session_lifetime = timedelta(days=1)  # セッションの有効期限
-# セッションの管理
+# Flask-Session設定
+app.config["SESSION_TYPE"] = "filesystem"  # ファイルベースのセッション管理
+app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # 保存場所
+app.config["SESSION_PERMANENT"] = True  # 永続セッション
+app.config["SESSION_USE_SIGNER"] = True  # セッションを署名付きで保護
 Session(app)
+
+# 保存ディレクトリを作成
+os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 
 
 # CORSの設定
