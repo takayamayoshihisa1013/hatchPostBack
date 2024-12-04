@@ -9,6 +9,8 @@ from flask_cors import CORS
 
 from datetime import timedelta
 
+import redis
+
 # mysql接続
 def mysql_conn():
 
@@ -41,6 +43,9 @@ app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_USE_SIGNER"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_TYPE"] = "redis"
+app.config["SESSION_REDIS"] = redis.StrictRedis(host='your-redis-host', port=6379, password='your-redis-password')
+
 
 # ディレクトリの作成
 os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
@@ -48,10 +53,7 @@ os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 # Session インスタンス化
 Session(app)
 
-Session(app)
 
-# 保存ディレクトリを作成
-os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 
 
 # CORSの設定
