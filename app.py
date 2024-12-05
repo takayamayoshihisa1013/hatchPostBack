@@ -44,7 +44,7 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # クロスサイト間でのク�
 app.permanent_session_lifetime = timedelta(hours=1)  # セッションの有効期限
 Session(app)
 
-session.permanent = True
+
 
 # 保存ディレクトリを作成
 os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
@@ -113,6 +113,7 @@ def login():
         if existCheckUser:
             session.clear()
             session["userId"] = existCheckUser[0]
+            session.permanent = True
             print("userID:" + session["userId"])
             return jsonify({"state": "success"}), 200
         else:
