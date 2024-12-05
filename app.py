@@ -36,16 +36,16 @@ app.debug = True
 # Flask-Session設定
 app.config["SECRET_KEY"] = b"yosshi20031013"
 app.config["SESSION_TYPE"] = "filesystem"  # ファイルベースのセッション管理
-app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # 保存場所
+# app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # 保存場所
 app.config["SESSION_PERMANENT"] = True  # 永続セッション
 app.config["SESSION_USE_SIGNER"] = True  # セッションを署名付きで保護
 app.config["SESSION_COOKIE_SAMESITE"] = "None"  # クロスサイト間でのクッキー共有を許可
 app.config["SESSION_COOKIE_SECURE"] = True 
-app.permanent_session_lifetime = timedelta(days=1)  # セッションの有効期限
+app.permanent_session_lifetime = timedelta(hours=1)  # セッションの有効期限
 Session(app)
 
 # 保存ディレクトリを作成
-os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
+# os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 
 # CORSの設定
 # "http://localhost:3000"をすべてのエンドポイントで許可する
@@ -124,8 +124,6 @@ def login():
         return jsonify({"state": "failed"}), 400
 
 # ポスト投稿
-
-
 @app.route("/newPost", methods=["POST"])
 def newPost():
     postContent = request.form.get("postContent")
