@@ -40,11 +40,11 @@ app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # �
 app.config["SESSION_PERMANENT"] = True  # 永続セッション
 app.config["SESSION_USE_SIGNER"] = True  # セッションを署名付きで保護
 app.config["SESSION_COOKIE_SECURE"] = True 
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # クロスサイト間でのクッキー共有を許可
+app.config["SESSION_COOKIE_SAMESITE"] = "None"  # クロスサイト間でのクッキー共有を許可
 app.permanent_session_lifetime = timedelta(hours=1)  # セッションの有効期限
 Session(app)
 
-
+session.permanent = True
 
 # 保存ディレクトリを作成
 os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
@@ -111,7 +111,6 @@ def login():
 
         existCheckUser = cur.fetchone()
         if existCheckUser:
-            
             session["userId"] = existCheckUser[0]
             
             print("userID:" + session["userId"])
