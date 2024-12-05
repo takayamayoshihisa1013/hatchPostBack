@@ -111,7 +111,7 @@ def login():
 
         existCheckUser = cur.fetchone()
         if existCheckUser:
-            session.clear()
+            
             session["userId"] = existCheckUser[0]
             
             print("userID:" + session["userId"])
