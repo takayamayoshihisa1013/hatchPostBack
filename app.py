@@ -202,7 +202,7 @@ def postData():
                         ORDER BY post.created_at DESC;
                         """)
             postData = cur.fetchall()
-        print(os.listdir(app.config["SESSION_FILE_DIR"], "cookie"))
+        print(os.listdir(app.config["SESSION_FILE_DIR"]), "cookie")
         return jsonify({"state": "success", "postData": postData}), 200
     except Exception as e:
         print("error:" + str(e))
