@@ -40,7 +40,7 @@ app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # �
 app.config["SESSION_PERMANENT"] = True  # 永続セッション
 app.config["SESSION_USE_SIGNER"] = True  # セッションを署名付きで保護
 app.config["SESSION_COOKIE_SECURE"] = True 
-app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # クロスサイト間でのクッキー共有を許可
+app.config["SESSION_COOKIE_SAMESITE"] = "None"  # クロスサイト間でのクッキー共有を許可
 app.permanent_session_lifetime = timedelta(hours=1)  # セッションの有効期限
 Session(app)
 
