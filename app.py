@@ -36,16 +36,16 @@ app.debug = True
 # Flask-Session設定
 app.config["SECRET_KEY"] = b"yosshi20031013"
 app.config["SESSION_TYPE"] = "filesystem"  # ファイルベースのセッション管理
-# app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # 保存場所
+app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # 保存場所
 app.config["SESSION_PERMANENT"] = True  # 永続セッション
 app.config["SESSION_USE_SIGNER"] = True  # セッションを署名付きで保護
-app.config["SESSION_COOKIE_SAMESITE"] = "None"  # クロスサイト間でのクッキー共有を許可
 app.config["SESSION_COOKIE_SECURE"] = True 
+app.config["SESSION_COOKIE_SAMESITE"] = "None"  # クロスサイト間でのクッキー共有を許可
 app.permanent_session_lifetime = timedelta(hours=1)  # セッションの有効期限
 Session(app)
 
 # 保存ディレクトリを作成
-# os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
+os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 
 # CORSの設定
 # "http://localhost:3000"をすべてのエンドポイントで許可する
@@ -75,8 +75,6 @@ def rightProfile():
         return jsonify({"login": False, "profileData": ("-", "ゲスト")}), 200
 
 # ユーザー登録
-
-
 @app.route("/newUser", methods=["POST"])
 def newUser():
     newUserData = request.get_json()
@@ -97,8 +95,6 @@ def newUser():
         return jsonify({"message": "error", "error": str(e)}), 400
 
 # ログイン
-
-
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
@@ -114,6 +110,7 @@ def login():
         existCheckUser = cur.fetchone()
         if existCheckUser:
             session["userId"] = existCheckUser[0]
+            
             print("userID:" + session["userId"])
             return jsonify({"state": "success"}), 200
         else:
@@ -122,6 +119,15 @@ def login():
     except Exception as e:
         print("error:" + str(e))
         return jsonify({"state": "failed"}), 400
+
+# ログアウト
+@app.route("/logout", methods=["POST"])
+def logout():
+    try:
+        session.clear()
+        return jsonify()
+    except Exception as e:
+        return jsonify({"error": "error" + str(e)})
 
 # ポスト投稿
 @app.route("/newPost", methods=["POST"])
@@ -196,7 +202,7 @@ def postData():
                         ORDER BY post.created_at DESC;
                         """)
             postData = cur.fetchall()
-
+        print(os.listdir(app.config["SESSION_FILE_DIR"], "cookie"))
         return jsonify({"state": "success", "postData": postData}), 200
     except Exception as e:
         print("error:" + str(e))
