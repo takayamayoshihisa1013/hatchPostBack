@@ -113,7 +113,7 @@ def login():
         if existCheckUser:
             session.clear()
             session["userId"] = existCheckUser[0]
-            session.permanent = True
+            
             print("userID:" + session["userId"])
             return jsonify({"state": "success"}), 200
         else:
