@@ -38,7 +38,7 @@ app.debug = True
 # Flask-Session設定
 app.config["SECRET_KEY"] = "yosshi20031013"
 app.config['SESSION_COOKIE_NAME'] = 'kotodama_Cookie'
-app.config["SESSION_TYPE"] = "redis"  # ファイルベースのセッション管理
+app.config["SESSION_TYPE"] = "filesystem"  # ファイルベースのセッション管理
 app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # 保存場所
 app.config["SESSION_PERMANENT"] = False  # 永続セッション
 app.config["SESSION_USE_SIGNER"] = True  # セッションを署名付きで保護
