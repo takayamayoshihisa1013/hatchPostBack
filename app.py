@@ -37,11 +37,9 @@ app.debug = True
 
 # Flask-Session設定
 app.config["SECRET_KEY"] = "yosshi20031013"
-app.config['SESSION_COOKIE_NAME'] = 'kotodama_Cookie'
 app.config["SESSION_TYPE"] = "filesystem"  # ファイルベースのセッション管理
 app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # 保存場所
-app.config['SESSION_COOKIE_PATH'] = '/'
-app.config["SESSION_PERMANENT"] = False  # 永続セッション
+app.config["SESSION_PERMANENT"] = True  # 永続セッション
 app.config["SESSION_USE_SIGNER"] = True  # セッションを署名付きで保護
 app.config["SESSION_COOKIE_SAMESITE"] = "None"  # クロスサイト間でのクッキー共有を許可
 app.config["SESSION_COOKIE_SECURE"] = True
@@ -54,7 +52,8 @@ os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 # "http://localhost:3000"をすべてのエンドポイントで許可する
 # また、クッキーを含めたリクエストを許可する
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
-CORS(app, resources={r"/*": {"origins": "https://ambitious-cliff-09a302f00.4.azurestaticapps.net"}}, supports_credentials=True)
+CORS(app, resources={
+    r"/*": {"origins": "https://ambitious-cliff-09a302f00.4.azurestaticapps.net"}}, supports_credentials=True)
 
 
 # 左側のプロフィール
