@@ -53,8 +53,10 @@ os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 # "http://localhost:3000"をすべてのエンドポイントで許可する
 # また、クッキーを含めたリクエストを許可する
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+# CORS(app, resources={
+#     r"/*": {"origins": "https://ambitious-cliff-09a302f00.4.azurestaticapps.net"}}, supports_credentials=True)
 CORS(app, resources={
-    r"/*": {"origins": "https://ambitious-cliff-09a302f00.4.azurestaticapps.net"}}, supports_credentials=True)
+    r"/*": {"origins": "https://kotodama-fmczcbfserh4hsda.a02.azurefd.net"}}, supports_credentials=True)
 
 
 # 左側のプロフィール
