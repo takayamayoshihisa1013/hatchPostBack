@@ -34,19 +34,22 @@ def mysql_conn():
 
 app = Flask(__name__)
 app.debug = True
+
 # Flask-Session設定
 app.config["SECRET_KEY"] = "yosshi20031013"
+app.config['SESSION_COOKIE_NAME'] = 'kotodama_Cookie'
 app.config["SESSION_TYPE"] = "filesystem"  # ファイルベースのセッション管理
 app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # 保存場所
-app.config["SESSION_PERMANENT"] = True  # 永続セッション
+app.config['SESSION_COOKIE_DOMAIN'] = 'hatchpostback-h0fecdbvcsepbed4.japaneast-01.azurewebsites.net'
+app.config['SESSION_COOKIE_PATH'] = '/'
+app.config["SESSION_PERMANENT"] = False  # 永続セッション
 app.config["SESSION_USE_SIGNER"] = True  # セッションを署名付きで保護
 app.config["SESSION_COOKIE_SAMESITE"] = "None"  # クロスサイト間でのクッキー共有を許可
-app.config["SESSION_COOKIE_SECURE"] = True 
+app.config["SESSION_COOKIE_SECURE"] = True
 Session(app)
 
 # 保存ディレクトリを作成
 os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
-
 
 # CORSの設定
 # "http://localhost:3000"をすべてのエンドポイントで許可する
