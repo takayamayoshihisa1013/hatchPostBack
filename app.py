@@ -551,8 +551,7 @@ def test():
 
 @app.route("/sendTest", methods=["POST", "OPTIONS"])
 def sendTest():
-    if request.method == 'OPTIONS':
-        return '', 204  # プリフライトリクエストへの応答
+    print(request.cookies)
     return jsonify({"happy":"happy"}), 200
 
 
