@@ -43,7 +43,7 @@ app.config["SESSION_FILE_DIR"] = os.path.join(os.getcwd(), "flask_session")  # �
 app.config["SESSION_USE_SIGNER"] = True  # セッションを署名付きで保護
 app.config["SESSION_COOKIE_SAMESITE"] = "None"  # クロスサイト間でのクッキー共有を許可
 app.config["SESSION_COOKIE_SECURE"] = True
-app.config["SESSION_COOKIE_DOMAIN"] = "kotodama-fmczcbfserh4hsda.a02.azurefd.net"
+app.config["SESSION_COOKIE_DOMAIN"] = "ambitious-cliff-09a302f00.4.azurestaticapps.net"
 Session(app)
 
 # 保存ディレクトリを作成
@@ -53,10 +53,10 @@ os.makedirs(app.config["SESSION_FILE_DIR"], exist_ok=True)
 # "http://localhost:3000"をすべてのエンドポイントで許可する
 # また、クッキーを含めたリクエストを許可する
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
-# CORS(app, resources={
-#     r"/*": {"origins": "https://ambitious-cliff-09a302f00.4.azurestaticapps.net"}}, supports_credentials=True)
 CORS(app, resources={
-    r"/*": {"origins": "https://kotodama-fmczcbfserh4hsda.a02.azurefd.net"}}, supports_credentials=True)
+    r"/*": {"origins": "https://ambitious-cliff-09a302f00.4.azurestaticapps.net"}}, supports_credentials=True)
+# CORS(app, resources={
+#     r"/*": {"origins": "https://kotodama-fmczcbfserh4hsda.a02.azurefd.net"}}, supports_credentials=True)
 
 
 # 左側のプロフィール
